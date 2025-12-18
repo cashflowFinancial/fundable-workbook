@@ -76,50 +76,7 @@ const Workbook = () => {
   // -------------------------------------------------------------------------
   // AUDIO LOGIC
   // -------------------------------------------------------------------------
-  const playAudio = (audioKey) => {
-    if (!audioKey) return;
-
-    // Case 1: Toggling the currently playing track
-    if (currentAudioKey === audioKey && audioRef.current) {
-      if (isAudioPlaying) {
-        audioRef.current.pause();
-        setIsAudioPlaying(false);
-      } else {
-        audioRef.current.play().catch(e => console.log("Audio play error:", e));
-        setIsAudioPlaying(true);
-      }
-      return;
-    }
-
-    // Case 2: Switching to a new track
-    if (audioRef.current) {
-      audioRef.current.pause();
-      audioRef.current.currentTime = 0;
-    }
-
-  
-  for (const ext of exts) {
-    try {
-      const url = `/audio/${audioKey}.${ext}`;
-      const a = new Audio(url);
-
-      a.addEventListener('ended', () => setIsAudioPlaying(false));
-      a.addEventListener('pause', () => setIsAudioPlaying(false));
-      a.addEventListener('play', () => setIsAudioPlaying(true));
-      a.preload = 'auto';
-
-      audioRef.current = a;
-      setCurrentAudioKey(audioKey);
-
-      await a.play();
-      setIsAudioPlaying(true);
-      return; // success
-    } catch (e) {
-      lastErr = e;
-    }
-  }
-
-const playAudio = async (audioKey) => {
+ const playAudio = async (audioKey) => {
   if (!audioKey) return;
 
   // Toggle if same track
@@ -158,8 +115,6 @@ const playAudio = async (audioKey) => {
       a.addEventListener("play", () => setIsAudioPlaying(true));
 
       audioRef.current = a;
-
-      // Always start at beginning
       a.currentTime = 0;
 
       await a.play();
