@@ -97,10 +97,7 @@ const Workbook = () => {
       audioRef.current.currentTime = 0;
     }
 
-   const tryPlay = async () => {
-  const exts = ['mp3', 'm4a']; // try mp3 first, then m4a
-  let lastErr = null;
-
+  
   for (const ext of exts) {
     try {
       const url = `/audio/${audioKey}.${ext}`;
@@ -122,24 +119,60 @@ const Workbook = () => {
     }
   }
 
+const playAudio = async (audioKey) => {
+  if (!audioKey) return;
+
+  // Toggle if same track
+  if (currentAudioKey === audioKey && audioRef.current) {
+    if (isAudioPlaying) {
+      audioRef.current.pause();
+      setIsAudioPlaying(false);
+    } else {
+      audioRef.current.play().catch((e) => console.log("Audio play error:", e));
+      setIsAudioPlaying(true);
+    }
+    return;
+  }
+
+  // Stop any currently playing audio
+  if (audioRef.current) {
+    audioRef.current.pause();
+    audioRef.current.currentTime = 0;
+    audioRef.current = null;
+  }
+
+  setCurrentAudioKey(audioKey);
+  setIsAudioPlaying(false);
+
+  const exts = ["mp3", "m4a"];
+  let lastErr = null;
+
+  for (const ext of exts) {
+    try {
+      const url = `/audio/${audioKey}.${ext}`;
+      const a = new Audio(url);
+      a.preload = "auto";
+
+      a.addEventListener("ended", () => setIsAudioPlaying(false));
+      a.addEventListener("pause", () => setIsAudioPlaying(false));
+      a.addEventListener("play", () => setIsAudioPlaying(true));
+
+      audioRef.current = a;
+
+      // Always start at beginning
+      a.currentTime = 0;
+
+      await a.play();
+      setIsAudioPlaying(true);
+      return; // success
+    } catch (e) {
+      lastErr = e;
+    }
+  }
+
   console.log(`Audio not found for key: ${audioKey}. Tried .mp3 and .m4a`, lastErr);
   setIsAudioPlaying(false);
 };
-
-tryPlay();
-    
-    // Event listeners to sync React state with Audio state
-    newAudio.addEventListener('ended', () => setIsAudioPlaying(false));
-    newAudio.addEventListener('pause', () => setIsAudioPlaying(false));
-    newAudio.addEventListener('play', () => setIsAudioPlaying(true));
-
-    audioRef.current = newAudio;
-    setCurrentAudioKey(audioKey);
-    
-    newAudio.play().catch(e => console.log("Audio play error:", e));
-    setIsAudioPlaying(true);
-  };
-
   // Cleanup audio on unmount
   useEffect(() => {
     return () => {
