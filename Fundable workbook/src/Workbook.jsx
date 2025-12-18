@@ -97,7 +97,36 @@ const Workbook = () => {
       audioRef.current.currentTime = 0;
     }
 
-    const newAudio = new Audio(`/audio/${audioKey}.mp3`);
+   const tryPlay = async () => {
+  const exts = ['mp3', 'm4a']; // try mp3 first, then m4a
+  let lastErr = null;
+
+  for (const ext of exts) {
+    try {
+      const url = `/audio/${audioKey}.${ext}`;
+      const a = new Audio(url);
+
+      a.addEventListener('ended', () => setIsAudioPlaying(false));
+      a.addEventListener('pause', () => setIsAudioPlaying(false));
+      a.addEventListener('play', () => setIsAudioPlaying(true));
+      a.preload = 'auto';
+
+      audioRef.current = a;
+      setCurrentAudioKey(audioKey);
+
+      await a.play();
+      setIsAudioPlaying(true);
+      return; // success
+    } catch (e) {
+      lastErr = e;
+    }
+  }
+
+  console.log(`Audio not found for key: ${audioKey}. Tried .mp3 and .m4a`, lastErr);
+  setIsAudioPlaying(false);
+};
+
+tryPlay();
     
     // Event listeners to sync React state with Audio state
     newAudio.addEventListener('ended', () => setIsAudioPlaying(false));
