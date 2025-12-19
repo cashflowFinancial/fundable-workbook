@@ -475,15 +475,25 @@ const Workbook = () => {
       title: 'The Next Step',
       audioKey: 'next-step',
       render: () => (
-        <div className="flex flex-col items-center justify-center text-center h-full space-y-8">
-          <h2 className="text-4xl font-serif font-bold text-[#1A2F23]">From awareness to control.</h2>
-          <p className="text-xl text-[#1C1917]">Continue inside the app.</p>
-          <div className="w-32 h-32 border-2 border-[#1A2F23] flex items-center justify-center no-print">
-            <span className="uppercase tracking-widest text-xs">QR Code</span>
-          </div>
-        </div>
-      )
-    }
+      <div className="flex flex-col items-center justify-center text-center h-full space-y-6">
+      <h2 className="text-4xl font-serif font-bold text-[#1A2F23]">
+        From awareness to control.
+      </h2>
+
+      <p className="text-xl text-[#1C1917]">
+        Continue inside the app.
+      </p>
+
+      <p className="text-sm text-[#1C1917]/50 italic">
+        If you’re not ready to continue today, your answers are saved.
+      </p>
+
+      <div className="w-32 h-32 border-2 border-[#1A2F23] flex items-center justify-center no-print">
+        <span className="uppercase tracking-widest text-xs">QR Code</span>
+      </div>
+    </div>
+  )
+}
   ];
 
   // -------------------------------------------------------------------------
